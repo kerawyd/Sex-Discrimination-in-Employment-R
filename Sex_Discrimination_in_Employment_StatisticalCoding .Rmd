@@ -1,0 +1,99 @@
+---
+title: "Sex Discrimination in Employment"
+author: "Kaylhan Garcia"
+date: "2025-01-28"
+output: word_document
+---
+
+# **Sex Discrimination in Employment**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load appropriate libraries and data
+
+```{r}
+library(tidyverse)
+library(Sleuth3)
+library(psych)
+data(case0102)
+
+help(case0102)
+```
+
+## Let's summarize the data by gender
+
+```{r}
+# Using a pipe describe Salaries by sex
+case0102 %>%
+  group_by(Sex) %>%
+  summarise(n=n(), Average=mean(Salary), SD=sd(Salary),
+            Median=median(Salary), IQR=IQR(Salary),
+            Min=min(Salary), Max=max(Salary),
+            Q1=quantile(Salary,0.25), Q3=quantile(Salary, 0.75)) %>%
+  knitr::kable(digits = 3)
+
+```
+
+## Now let's see the data across both genders
+
+```{r}
+describe(case0102$Salary , skew= FALSE, ranges = TRUE, IQR = TRUE, omit = TRUE)
+
+```
+
+##Mutating the data for "Male" to appear first
+
+```{r}
+case0102 <- case0102 %>%
+  mutate(Sex = factor(Sex, levels=c('Male', 'Female')))
+levels(case0102$Sex)
+```
+
+## Begin visualizations
+
+```{r}
+
+ggplot(data = case0102, mapping = aes(y = Salary, x = Sex)) +
+  geom_boxplot(fill="blue")+
+  ylab("Salary")+
+  xlab("Gender")
+```
+
+```{r}
+ggplot(data = case0102, mapping = aes(x = Salary, fill = Sex)) +
+  geom_density(alpha = 0.3)+
+  xlab("Salary")+
+  theme_bw()
+```
+
+This is a **density plot** comparing salaries between **males (pink) and females (blue).**
+
+Instead of showing exact counts, it shows the **shape of the salary distribution**—where salaries are most concentrated.
+
+-   Female salaries tend to cluster around **\$5000**, while male salaries peak around **\$6000.**
+
+## Hypotheses Testing
+
+### Let's use a T-Test
+
+```{r}
+t.test(Salary ~ Sex, var.equal = TRUE, data = case0102)
+```
+
+## Inference
+
+We are 95% confident that the true difference in mean salaries between males and females lies between \$560 and \$1,076
+
+**Male mean:** \$5956.88
+
+**Female mean:** \$5138.85
+
+**Difference:** \$818.03
+
+H0: There is no difference in the mean salaries between males and females. #Ha: There is a difference in the mean salaries between males and females.
+
+The test shows a statistically significant difference in mean salaries between males and females
+
+There is no need to do the Shapiro-Wilk test of normality because our sample size is greater than 50, therefore it is not appropriate.
