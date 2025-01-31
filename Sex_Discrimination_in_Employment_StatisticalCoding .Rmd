@@ -96,4 +96,4 @@ H0: There is no difference in the mean salaries between males and females. #Ha: 
 
 The test shows a statistically significant difference in mean salaries between males and females
 
-There is no need to do the Shapiro-Wilk test of normality because our sample size is greater than 50, therefore it is not appropriate.
+
